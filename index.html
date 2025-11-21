@@ -142,8 +142,10 @@
       <br>5. I understand this agreement is legally binding.
     </p>
 
-    <!-- TODO: replace the ACTION value with your real Formspree endpoint when you're ready -->
-    <form id="releaseForm" method="POST" action="YOUR_FORMSPREE_ENDPOINT_HERE">
+    <form id="releaseForm" method="POST" action="https://formspree.io/f/meonwooe">
+      <input type="hidden" name="_subject" value="New signed media release">
+      <!-- You can add a _next redirect later after we confirm email delivery -->
+
       <label for="name">Participant Name (full name)</label>
       <input type="text" id="name" name="Participant Name" required>
 
@@ -174,8 +176,6 @@
       </div>
 
       <button type="submit" class="btn-submit">Submit Release</button>
-
-      <input type="hidden" name="_subject" value="New signed media release">
     </form>
 
     <div class="footer-note">
