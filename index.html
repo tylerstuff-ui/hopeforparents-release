@@ -1,1 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Is Love Real? – Media Release</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 16px;
+      line-height: 1.4;
+      background: #f8f9fb;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 16px 18px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    h1 {
+      font-size: 1.6rem;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+      text-align: center;
+      color: #555;
+      margin-bottom: 16px;
+    }
+    h2 {
+      font-size: 1.1rem;
+      margin-top: 12px;
+      margin-bottom: 8px;
+    }
+    p {
+      font-size: 0.9rem;
+      margin: 4px 0;
+    }
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: block;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+    input[type="text"], input[type="email"] {
+      width: 100%;
+      padding: 8px;
+      font-size: 0.95rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    input[readonly] {
+      background: #f0f0f0;
+    }
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      margin-top: 12px;
+      font-size: 0.85rem;
+    }
+    .checkbox-row input {
+      margin-right: 8px;
+      margin-top: 3px;
+    }
+    #signature-pad {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 4px;
+      width: 100%;
+      height: 160px;
+      touch-action: none;
+      background: #ffffff;
+    }
+    .sig-buttons {
+      margin-top: 6px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    button {
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-clear {
+      background: #e0e0e0;
+    }
+    .btn-submit {
+      background: #1e88e5;
+      color: white;
+      width: 100%;
+      margin-top: 14px;
+    }
+    .note {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 4px;
+    }
+    .footer-note {
+      font-size: 0.8rem;
+      color: #555;
+      text-align: center;
+      margin-top: 16px;
+    }
+    .error {
+      color: #c62828;
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Is Love Real?</h1>
+    <div class="subtitle">
+      Clarity about love and your daughter’s own worth in the confusing world of teenage romance.
+    </div>
 
+    <h2>Media Release and Consent</h2>
+
+    <p>
+      I grant to <strong>Tyler Durman &amp; Brooke Hardy</strong> (“Producer”) the irrevocable, perpetual, worldwide
+      right to record, reproduce, edit, distribute, display, publish, license, and otherwise use my image, voice,
+      likeness, name, and all spoken content from my recorded interview(s) in any and all media formats, including
+      film, documentary projects, online courses, social media, digital platforms, print materials, promotional
+      content, advertising, and commercial products.
+    </p>
+    <p>
+      I understand and agree:
+      <br>1. The rights granted are full, unrestricted, and irrevocable.
+      <br>2. I will receive no monetary payment or royalties now or in the future.
+      <br>3. Producer has complete editorial discretion.
+      <br>4. I release Producer from liability arising from such use.
+      <br>5. I understand this agreement is legally binding.
+    </p>
+
+    <!-- TODO: replace the ACTION value with your real Formspree endpoint when you're ready -->
+    <form id="releaseForm" method="POST" action="YOUR_FORMSPREE_ENDPOINT_HERE">
+      <label for="name">Participant Name (full name)</label>
+      <input type="text" id="name" name="Participant Name" required>
+
+      <label for="email">Participant Email (optional)</label>
+      <input type="email" id="email" name="Participant Email" placeholder="you@example.com">
+
+      <label for="date">Date</label>
+      <input type="text" id="date" name="Date" readonly>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="agree" required>
+        <label for="agree" style="font-weight:400;margin-top:0;">
+          I have read this release and agree to its terms.
+        </label>
+      </div>
+
+      <label>Signature (use your finger)</label>
+      <canvas id="signature-pad"></canvas>
+      <div class="sig-buttons">
+        <button type="button" class="btn-clear" id="clearSig">Clear</button>
+      </div>
+      <div class="note">Your drawn signature will be sent with this form.</div>
+
+      <input type="hidden" id="signatureData" name="Signature Image (data URL)">
+
+      <div id="errorMsg" class="error" style="display:none;">
+        Please sign in the box before submitting.
+      </div>
+
+      <button type="submit" class="btn-submit">Submit Release</button>
+
+      <input type="hidden" name="_subject" value="New signed media release">
+    </form>
+
+    <div class="footer-note">
+      Once submitted, your signed release is automatically sent to
+      <a href="mailto:Tyler@HopeForParents.com">Tyler@HopeForParents.com</a>.
+    </div>
+  </div>
+
+  <script>
+    (function setToday() {
+      const dateInput = document.getElementById('date');
+      const today = new Date();
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      dateInput.value = today.toLocaleDateString(undefined, options);
+    })();
+
+    const canvas = document.getElementById('signature-pad');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let hasSignature = false;
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = rect.width * ratio;
+      canvas.height = rect.height * ratio;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#000';
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('load', resizeCanvas);
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      if (e.touches && e.touches.length > 0) {
+        return {
+          x: e.touches[0].clientX - rect.left,
+          y: e.touches[0].clientY - rect.top
+        };
+      } else {
+        return {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top
+        };
+      }
+    }
+
+    function startDraw(e) {
+      e.preventDefault();
+      drawing = true;
+      hasSignature = true;
+      document.getElementById('errorMsg').style.display = 'none';
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(e) {
+      if (!drawing) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function endDraw(e) {
+      e.preventDefault();
+      drawing = false;
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', endDraw, { passive: false });
+
+    document.getElementById('clearSig').addEventListener('click', function() {
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      hasSignature = false;
+      document.getElementById('errorMsg').style.display = 'none';
+    });
+
+    document.getElementById('releaseForm').addEventListener('submit', function(e) {
+      if (!hasSignature) {
+        e.preventDefault();
+        document.getElementById('errorMsg').style.display = 'block';
+        return;
+      }
+      const dataURL = canvas.toDataURL('image/png');
+      document.getElementById('signatureData').value = dataURL;
+    });
+  </script>
+</body>
+</html>
